@@ -1,0 +1,68 @@
+======================
+Simplesite user manual
+======================
+
+* Author: Oliver Fields
+* Email: oliver@phnd.net
+
+------------------
+What is simplesite
+------------------
+Simplesite is a static site generator. Basically it converts restructuredtext files to a simple website, adding appropriate html and a menu linking the site toghether.
+
+It is entirely contained in a single Bash script and requires only rst2html from Python Docutils to be installed.
+
+Intended as an easy and succinct tool with only the bare minimum of functionality. Please note the following.
+
+* Must be run from the *ss_root* (directory containing simplesite.conf)
+* Pages are restructuredtext files located in *ss_root/source*
+* To include CSS, Javascritp, images etc, add them to the *ss_root/include* directory and add appropriate links/references in the *ss_root/template* files
+* Run **simplesite** from *ss_root* to generate site
+
+
+Usage
+-----
+1. Initialize by running **simplesite --init** in an empty directory
+2. Most probably edit the *ss_root/template* files
+3. Add appropriate elements to *ss_root/include* (e.g. CSS) 
+4. Add content by creating restructuredtext files in the *ss_root/source* directory, please see note regarding naming below
+5. Build site by running **simplesite** (must be in *ss_root* directory), upload the *ss_root/site* dir to a web server
+
+.. note:: File naming convention
+	The name of the source file will become the url and also the title of each html page. To influence ordering of the menu items a prefix may be added.
+
+	Given a source file called **ss_root/source/2_simplesite-faq.txt** the following will happen.
+
+	* URL will be */simple-site.html*
+	* Title tag will become *Simplesite faq*
+	* The link will be placed before any file named *1_*, but before any named *3_* 
+
+
+simplesite.conf
+---------------
+The settings available are as follows.
+
+===============	==============================
+Name		Description
+===============	==============================
+title_prefix	Prefix for all title tags
+title_suffix	Suffix for all title tags
+frontpage_title Title tag value for index.html
+===============	==============================
+
+
+Site generation
+---------------
+On generation the following happend.
+
+* All source files are converted to html and saved to *ss_root/site*
+* The all files in *ss_root/include* directory are copied to *ss_root/site*
+
+
+Limitations
+-----------
+The name should give an indication that this is a basic site generator as such the following limitations apply.
+
+* All pages share same layout
+* No site hiearachy, all pages will be on the web root level
+* Only head tag customization per page available is setting title tag

@@ -1,0 +1,111 @@
+#!/bin/bash
+
+simplesite_conf="simplesite.conf"
+rst2html_template="template/rst2html_template.txt"
+header_template="template/header.html"
+footer_template="template/footer.html"
+include_dir="include"
+source_dir="source"
+site_dir="site"
+template_dir="template"
+
+
+function error() {
+  echo "Error: $1" >&2
+  exit 1 
+}
+
+function usage() {
+  echo -e "Usage: simplesite [--init]\n\nCommand must be run from the same directory as '$simplesite_conf'" >&2
+  exit 1 
+}
+
+
+function print_header() {
+  title="$1"
+  sed "s/##TITLE##/$title_prefix$title$title_postfix/" "$header_template"
+}
+
+
+function makehtml() {
+  pages=()
+  menu=""
+
+  # Make list of files, their titles and urls
+  for file in $(ls "$source_dir/"*.txt); do
+    rest_file="${file##*/}"
+    html_file="${rest_file%.txt}.html"
+    html_file="${html_file#*_}"
+
+    if [ "$html_file" = "index.html" ]; then
+      title="$frontpage_title"
+    else
+      title="${html_file%.html}"
+      title="${title//-/ }"
+      title="${title^}"
+    fi
+
+    pages+=("$rest_file;$html_file;$title")
+
+    if [ "$html_file" != 'index.html' ]; then
+      menu="$menu<li><a href=\"$html_file\">$title</a></li>"
+    fi
+  done
+  menu="<ul id=\"menu\">$menu</ul>"
+
+  for page_info in "${pages[@]}"; do
+    read rest_file html_file title <<<$(IFS=";"; echo $page_info)
+    
+    if [ "$rest_file" -nt "$html_file" ]; then
+      print_header "$title" > "$site_dir/$html_file"
+      echo "<h1 class=\"title\">$title</h1>" >> "$PWD/$site_dir/$html_file"
+      rst2html "--template=$rst2html_template" "$PWD/$source_dir/$rest_file" >> "$PWD/$site_dir/$html_file"
+      echo "$menu" >> "$site_dir/$html_file"
+      cat "$footer_template" >> "$site_dir/$html_file"
+    fi
+
+  done
+}
+
+
+function init_dir() {
+  if [ -f "$simplesite_conf" ]; then
+    error "Existing site found, directory already inititialized, quitting" 
+  fi
+
+  mkdir "$site_dir" "$source_dir" "$include_dir" "$template_dir"
+  echo -e "title_prefix=''
+title_suffix=' - simplesite'
+frontpage_title='Welcome to simplesite'" > "$simplesite_conf"
+  echo '<html><head><title>##TITLE##</title><meta name="generator" content="simplesite"></head><body>' > "$header_template"
+  echo '</body></html>' > "$footer_template"
+  echo '%(body)s' > "$rst2html_template"
+  echo "Please see simplesite README for instructions!" > "$source_dir/index.txt"
+  exit 0
+}
+
+# This is where the magic starts:)
+
+if [ "$1" == "--init" ]; then
+  init_dir
+elif [ $# -gt 0 ]; then
+  usage
+fi
+
+# If simplesite.conf does not exist we are in wrong dir, exit
+if [ -f "$simplesite_conf" ]; then
+  . "$simplesite_conf" # load config
+else
+  error "Unable to find '$(pwd)/$simplesite_conf', quitting. Please run 'simplesite --init' to setup new site"
+fi
+
+# Check rst2html exists
+command -v rst2html >/dev/null 2>&1 || error 'Python docutils rst2html command not found, quiting' 
+
+makehtml
+
+if [ -d "$PWD/$include_dir" ]; then # Check exists
+  if ! [ -z "$(ls $PWD/$include_dir)" ]; then # Check if empty
+    cp -R "$PWD/$include_dir/"* "$PWD/$site_dir/."
+  fi
+fi
