@@ -55,8 +55,8 @@ function makehtml() {
 
   for page_info in "${pages[@]}"; do
     read rest_file html_file title <<<$(IFS=";"; echo $page_info)
-    
-    if [ "$rest_file" -nt "$html_file" ]; then
+   
+    if ! [ -f "$site_dir/$html_file" ] || [ "$source_dir/$rest_file" -nt "$site_dir/$html_file" ]; then
       print_header "$title" > "$site_dir/$html_file"
       echo "<h1 class=\"title\">$title</h1>" >> "$PWD/$site_dir/$html_file"
       rst2html "--template=$rst2html_template" "$PWD/$source_dir/$rest_file" >> "$PWD/$site_dir/$html_file"
