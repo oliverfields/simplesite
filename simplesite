@@ -60,7 +60,7 @@ function makehtml() {
       print_header "$title" > "$site_dir/$html_file"
       echo "<h1 class=\"title\">$title</h1>" >> "$PWD/$site_dir/$html_file"
       rst2html "--template=$rst2html_template" "$PWD/$source_dir/$rest_file" >> "$PWD/$site_dir/$html_file"
-      echo "$menu" >> "$site_dir/$html_file"
+      echo "$menu" >> "$PWD/$site_dir/$html_file"
       cat "$footer_template" >> "$site_dir/$html_file"
     fi
 
