@@ -58,6 +58,7 @@ On generation the following happend.
 * All source files are converted to html and saved to *ss_root/site*
 * The all files in *ss_root/include* directory are copied to *ss_root/site*
 
+When run simplesite will check for existance of *ss_root/deployment*, if this file is executable it will be run after the site generation has completed. This script will subsequently be run and can for example upload the *ss_root/site* to a FTP server.
 
 Limitations
 -----------

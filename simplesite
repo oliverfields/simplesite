@@ -8,6 +8,7 @@ include_dir="include"
 source_dir="source"
 site_dir="site"
 template_dir="template"
+deploy_script="deployment"
 
 
 function error() {
@@ -113,4 +114,8 @@ if [ -d "$PWD/$include_dir" ]; then # Check exists
   if ! [ -z "$(ls $PWD/$include_dir)" ]; then # Check if empty
     cp -R "$PWD/$include_dir/"* "$PWD/$site_dir/."
   fi
+fi
+
+if [ -e "$deploy_script" ]; then
+  "./$deploy_script"
 fi
