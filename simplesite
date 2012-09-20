@@ -105,6 +105,10 @@ else
   error "Unable to find '$(pwd)/$simplesite_conf', quitting. Please run 'simplesite --init' to setup new site"
 fi
 
+if ! [ -e "$site_dir" ]; then
+  mkdir "$site_dir" || error "Unable to create '$site_dir'"
+fi
+
 # Check rst2html exists
 command -v rst2html >/dev/null 2>&1 || error 'Python docutils rst2html command not found, quiting' 
 
