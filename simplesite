@@ -32,6 +32,18 @@ function makehtml() {
   pages=()
   menu=""
 
+  # If any template files are newer than source files then need to
+  # delete entire site and rebuild
+  for file in $(ls "$source_dir/"*.txt); do
+    rest_file="${file##*/}"
+    html_file="${rest_file%.txt}.html"
+    html_file="${html_file#*_}"
+    if [ "$header_template" -nt "$site_dir/$html_file" ] || [ "$footer_template" -nt "$site_dir/$html_file" ]; then
+      rm -Rf "$site_dir/"*
+      break
+    fi
+  done
+
   # Make list of files, their titles and urls
   for file in $(ls "$source_dir/"*.txt); do
     rest_file="${file##*/}"
