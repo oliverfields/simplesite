@@ -28,6 +28,22 @@ function print_header() {
 }
 
 
+function makesitemap() {
+  if [ "$base_url" = "" ]; then
+    echo 'Warning: No base_url setting in simplesite.conf, skipping sitemap generation'
+  else
+    {
+      for file in $(ls "$source_dir/"*.txt); do
+        rest_file="${file##*/}"
+        html_file="${rest_file%.txt}.html"
+        html_file="${html_file#*_}"
+        echo "$base_url/$html_file"
+      done
+    } > "$site_dir/sitemap.txt"
+  fi
+}
+
+
 function makehtml() {
   pages=()
   menu=""
@@ -125,6 +141,7 @@ fi
 command -v rst2html >/dev/null 2>&1 || error 'Python docutils rst2html command not found, quiting' 
 
 makehtml
+makesitemap
 
 if [ -d "$PWD/$include_dir" ]; then # Check exists
   if ! [ -z "$(ls $PWD/$include_dir)" ]; then # Check if empty
