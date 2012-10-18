@@ -80,7 +80,10 @@ function makehtml() {
       menu="$menu<li><a href=\"$html_file\">$title</a></li>"
     fi
   done
-  menu="<ul id=\"menu\">$menu</ul>"
+
+  if [ "$menu" != "" ]; then
+    menu="<ul id=\"menu\">$menu</ul>"
+  fi
 
   for page_info in "${pages[@]}"; do
     read rest_file html_file title <<<$(IFS=";"; echo $page_info)
