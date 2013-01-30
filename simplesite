@@ -130,6 +130,7 @@ function makedotgraphs() {
 
   for dot_graph in $(find "$include_dir" -name '*.dot'); do
     image_graph="${dot_graph%.dot}.png"
+echo "Converting '$dot_graph' to '$image_graph'.."
     dot -Tpng "$dot_graph" -o "$image_graph" || error "Unable to convert '$dot_graph' to png"
     rm "$dot_graph"
   done
@@ -166,7 +167,7 @@ fi
 
 # If enabled in config file, convert all *.dot files in include directory
 # to png
-if [ "$auto_convert_dot_to_png" = "yes" ]; then
+if [ "$convert_dot_to_png" = "yes" ]; then
   makedotgraphs "$PWD/$site_dir"
 fi
 
