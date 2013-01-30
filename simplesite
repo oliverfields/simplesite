@@ -121,6 +121,21 @@ frontpage_title='Welcome to simplesite'" > "$simplesite_conf"
   exit 0
 }
 
+# Finds *.dot files in the include directory and converts them to PNG's
+function makedotgraphs() {
+  include_dir="$1"
+
+  # Check dot exists
+  command -v dot >/dev/null 2>&1 || error 'Graphviz dot command not found, quiting'
+
+  for dot_graph in $(find "$include_dir" -name '*.dot'); do
+    image_graph="${dot_graph%.dot}.png"
+    dot -Tpng "$dot_graph" -o "$image_graph" || error "Unable to convert '$dot_graph' to png"
+    rm "$dot_graph"
+  done
+}
+
+
 # This is where the magic starts:)
 
 if [ "$1" == "--init" ]; then
@@ -143,15 +158,22 @@ fi
 # Check rst2html exists
 command -v rst2html >/dev/null 2>&1 || error 'Python docutils rst2html command not found, quiting' 
 
-makehtml
-makesitemap
-
 if [ -d "$PWD/$include_dir" ]; then # Check exists
   if ! [ -z "$(ls $PWD/$include_dir)" ]; then # Check if empty
     cp -R "$PWD/$include_dir/"* "$PWD/$site_dir/."
   fi
 fi
 
+# If enabled in config file, convert all *.dot files in include directory
+# to png
+if [ "$auto_convert_dot_to_png" = "yes" ]; then
+  makedotgraphs "$PWD/$site_dir"
+fi
+
+makehtml
+makesitemap
+
+# If deploy script exists and is executable, then run it
 if [ -e "$deploy_script" ]; then
   "./$deploy_script"
 fi

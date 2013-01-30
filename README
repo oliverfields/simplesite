@@ -42,13 +42,15 @@ simplesite.conf
 ---------------
 The settings available are as follows.
 
-===============	==============================
-Name		Description
-===============	==============================
-title_prefix	Prefix for all title tags
-title_suffix	Suffix for all title tags
-frontpage_title Title tag value for index.html
-===============	==============================
+================== ===========================================================
+Name               Description                                                
+================== ===========================================================
+title_prefix       Prefix for all title tags                                  
+title_suffix       Suffix for all title tags                                  
+frontpage_title    Title tag value for index.html                             
+base_url           The site's base url e.g. http://test.com                   
+convert_dot_to_png If 'yes' generate png files from *.dot files in include dir
+================== ===========================================================
 
 
 Site generation
