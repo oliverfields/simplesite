@@ -46,7 +46,6 @@ function makesitemap() {
 
 # Parse config setting menu and generate site menu
 function makemenu() {
-echo frakk
   target_file="$1"
   html_file="${target_file##*/}"
 
