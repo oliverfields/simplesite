@@ -44,9 +44,29 @@ function makesitemap() {
 }
 
 
+# Parse config setting menu and generate site menu
+function makemenu() {
+echo frakk
+  target_file="$1"
+  html_file="${target_file##*/}"
+
+  if [ ${#menu[@]} -gt 0 ]; then 
+    {
+      echo '<ul id="menu">'
+      for item in "${menu[@]}"; do
+        title="${item%.html}"
+        title="${title//-/ }"
+        title="${title^}"
+        echo "<li><a href=\"/${item}\">$title</a></li>"
+      done
+      echo "</ul>"
+    } >> "$target_file"
+  fi
+}
+
+
 function makehtml() {
   pages=()
-  menu=""
 
   # If any template files are newer than source files then need to
   # delete entire site and rebuild
@@ -64,7 +84,6 @@ function makehtml() {
   for file in $(ls "$source_dir/"*.rst); do
     rest_file="${file##*/}"
     html_file="${rest_file%.rst}.html"
-    html_file="${html_file#*_}"
 
     if [ "$html_file" = "index.html" ]; then
       title="$frontpage_title"
@@ -75,15 +94,7 @@ function makehtml() {
     fi
 
     pages+=("$rest_file;$html_file;$title")
-
-    if [ "$html_file" != 'index.html' ]; then
-      menu="$menu<li><a href=\"$html_file\">$title</a></li>"
-    fi
   done
-
-  if [ "$menu" != "" ]; then
-    menu="<ul id=\"menu\">$menu</ul>"
-  fi
 
   for page_info in "${pages[@]}"; do
     read rest_file html_file title <<<$(IFS=";"; echo $page_info)
@@ -95,7 +106,9 @@ function makehtml() {
       print_header "$title" > "$site_dir/$html_file"
       echo "<h1 class=\"title\">$title</h1>" >> "$PWD/$site_dir/$html_file"
       rst2html "--template=$rst2html_template" "$PWD/$source_dir/$rest_file" >> "$PWD/$site_dir/$html_file"
-      echo "$menu" >> "$PWD/$site_dir/$html_file"
+
+      makemenu "$PWD/$site_dir/$html_file"
+
       cat "$footer_template" >> "$site_dir/$html_file"
     #else
     #  echo "Skipping $site_dir/$html_file"
@@ -145,7 +158,7 @@ elif [ $# -gt 0 ]; then
   usage
 fi
 
-# If simplesite.conf does not exist we are in wrong dir, exit
+# If simplesite.conf exists source it, else we are in wrong dir, exit
 if [ -f "$simplesite_conf" ]; then
   . "$simplesite_conf"
 else

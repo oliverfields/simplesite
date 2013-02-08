@@ -29,13 +29,12 @@ Usage
 5. Build site by running **simplesite** (must be in *ss_root* directory), upload the *ss_root/site* dir to a web server
 
 .. note:: File naming convention
-	The name of the source file will become the url and also the title of each html page. To influence ordering of the menu items a prefix may be added.
+	The name of the source file will become the url and also the title of each html page.
 
-	Given a source file called **ss_root/source/2_simplesite-faq.txt** the following will happen.
+	Given a source file called **ss_root/source/simplesite-faq.txt** the following will happen.
 
 	* URL will be */simple-site.html*
 	* Title tag will become *Simplesite faq*
-	* The link will be placed before any file named *1_*, but before any named *3_* 
 
 
 simplesite.conf
@@ -50,6 +49,7 @@ title_suffix       Suffix for all title tags
 frontpage_title    Title tag value for index.html                             
 base_url           The site's base url e.g. http://test.com                   
 convert_dot_to_png If 'yes' generate png files from *.dot files in include dir
+menu[0..n]         List of links for menu, must match generated html names
 ================== ===========================================================
 
 
@@ -68,4 +68,4 @@ The name should give an indication that this is a basic site generator as such t
 
 * All pages share same layout
 * No site hiearachy, all pages will be on the web root level
-* Only head tag customization per page available is setting title tag
+* Only head tag customization per page available is setting the title tag
